@@ -1,0 +1,808 @@
+<title>West Houston Job Hunt</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Public+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+/* Layout: one column workbench. Tracker first (daily use), then targets, search links, playbook. */
+:root {
+  --bg: #eef2f0;
+  --surface: #ffffff;
+  --ink: #13221e;
+  --muted: #56655f;
+  --line: #d3ddd8;
+  --accent: #0d6b5b;
+  --accent-ink: #ffffff;
+  --accent-soft: #d6ece6;
+  --warn: #9a5a00;
+  --warn-soft: #fbecd2;
+  --good: #1f7a3a;
+  --good-soft: #dcf0e1;
+  --bad: #9b2c2c;
+  --bad-soft: #f6dcdc;
+  --font-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --font-body: "Public Sans", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0e1715; --surface: #16221f; --ink: #e4eeea; --muted: #9aaba4; --line: #2a3a35;
+    --accent: #4fc2a8; --accent-ink: #062019; --accent-soft: #173a32;
+    --warn: #f0b45a; --warn-soft: #3a2a12; --good: #71d18d; --good-soft: #163522;
+    --bad: #f08c8c; --bad-soft: #3d1b1b; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0e1715; --surface: #16221f; --ink: #e4eeea; --muted: #9aaba4; --line: #2a3a35;
+  --accent: #4fc2a8; --accent-ink: #062019; --accent-soft: #173a32;
+  --warn: #f0b45a; --warn-soft: #3a2a12; --good: #71d18d; --good-soft: #163522;
+  --bad: #f08c8c; --bad-soft: #3d1b1b; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font: 15px/1.55 var(--font-body); }
+.wrap { max-width: 980px; margin: 0 auto; padding-inline: 16px; padding-block: 28px 64px; display: flex; flex-direction: column; gap: 40px; }
+h1, h2, h3 { font-family: var(--font-display); text-wrap: balance; margin: 0; line-height: 1.15; }
+h1 { font-size: clamp(28px, 6vw, 44px); font-weight: 800; }
+h2 { font-size: 24px; font-weight: 800; }
+h3 { font-size: 17px; font-weight: 600; }
+p { margin: 0; }
+a { color: var(--accent); }
+.eyebrow { font: 600 12px/1 var(--font-body); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.muted { color: var(--muted); }
+.mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+section { display: flex; flex-direction: column; gap: 16px; }
+.sec-head { display: flex; flex-direction: column; gap: 6px; }
+
+/* header */
+header { display: flex; flex-direction: column; gap: 14px; }
+.criteria { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip { display: inline-flex; align-items: center; gap: 6px; padding: 5px 10px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); font-size: 13px; font-weight: 600; white-space: nowrap; }
+.chip.pay { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+
+/* stats */
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
+.stat { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 14px; display: flex; flex-direction: column; gap: 6px; }
+.stat .num { font: 500 26px/1 var(--font-mono); }
+.bar { height: 6px; border-radius: 3px; background: var(--line); overflow: hidden; }
+.bar > i { display: block; height: 100%; background: var(--accent); width: 0; transition: width .3s; }
+
+/* form */
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 14px; }
+.grid-form { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; }
+label { display: flex; flex-direction: column; gap: 4px; font-size: 13px; font-weight: 600; color: var(--muted); min-width: 0; }
+input, select, textarea { font: inherit; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; width: 100%; }
+textarea { resize: vertical; min-height: 40px; }
+input:focus-visible, select:focus-visible, textarea:focus-visible, button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+button { font: 600 14px var(--font-body); border-radius: 8px; padding: 8px 14px; cursor: pointer; border: 1px solid var(--line); background: var(--surface); color: var(--ink); }
+button.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+button.small { padding: 5px 10px; font-size: 13px; }
+button.danger { color: var(--bad); }
+button:hover { filter: brightness(.96); }
+.note { font-size: 13px; color: var(--muted); }
+
+/* tracker list */
+.filters { display: flex; flex-wrap: wrap; gap: 6px; }
+.filters button[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.apps { display: flex; flex-direction: column; gap: 10px; }
+.app { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; display: grid; grid-template-columns: 1fr auto; gap: 8px 16px; }
+.app.due { border-color: var(--warn); box-shadow: inset 4px 0 0 var(--warn); }
+.app-main { min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+.app-title { font-weight: 700; overflow-wrap: anywhere; }
+.app-meta { font-size: 13px; color: var(--muted); display: flex; flex-wrap: wrap; gap: 4px 14px; }
+.app-notes { font-size: 13px; overflow-wrap: anywhere; }
+.app-side { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
+.app-actions { display: flex; flex-wrap: wrap; gap: 6px; justify-content: flex-end; grid-column: 1 / -1; }
+.status { font-size: 12px; font-weight: 700; padding: 3px 9px; border-radius: 999px; background: var(--line); color: var(--ink); white-space: nowrap; }
+.s-toapply { background: var(--line); }
+.s-applied { background: var(--accent-soft); color: var(--accent); }
+.s-interview { background: var(--warn-soft); color: var(--warn); }
+.s-offer { background: var(--good-soft); color: var(--good); }
+.s-closed { background: var(--bad-soft); color: var(--bad); }
+.due-tag { font-size: 12px; font-weight: 700; color: var(--warn); }
+.empty { border: 1px dashed var(--line); border-radius: 10px; padding: 22px; text-align: center; color: var(--muted); }
+.banner { font-size: 13px; padding: 8px 12px; border-radius: 8px; background: var(--warn-soft); color: var(--warn); }
+.status-select { width: auto; padding: 4px 8px; font-size: 13px; }
+
+/* targets */
+.cat-tabs { display: flex; flex-wrap: wrap; gap: 6px; }
+.cat-tabs button[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.targets { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }
+.target { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 14px; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.target-top { display: flex; justify-content: space-between; gap: 10px; align-items: baseline; }
+.pay-tag { font: 500 13px var(--font-mono); white-space: nowrap; }
+.pay-src { font-size: 12px; }
+.target .roles { font-size: 14px; font-weight: 600; }
+.target .why { font-size: 14px; color: var(--muted); flex: 1; }
+.target .row { margin-top: 4px; }
+
+/* links + playbook */
+.links { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; }
+.link-card { display: flex; flex-direction: column; gap: 4px; padding: 12px 14px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); text-decoration: none; color: var(--ink); }
+.link-card:hover { border-color: var(--accent); }
+.link-card strong { color: var(--accent); }
+.link-card span { font-size: 13px; color: var(--muted); }
+ol.steps { margin: 0; padding-left: 22px; display: flex; flex-direction: column; gap: 10px; max-width: 68ch; }
+ol.steps li::marker { font-family: var(--font-mono); color: var(--accent); }
+.two { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
+pre.copy { margin: 0; white-space: pre-wrap; font: 13px/1.6 var(--font-mono); background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 12px; overflow-x: auto; }
+dl.qa { margin: 0; display: flex; flex-direction: column; gap: 12px; }
+dl.qa dt { font-weight: 700; }
+dl.qa dd { margin: 2px 0 0; color: var(--muted); font-size: 14px; }
+ul.flags { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 6px; font-size: 14px; }
+/* apply kit */
+.explain { border-left: 3px solid var(--accent); padding: 4px 0 4px 14px; max-width: 70ch; display: flex; flex-direction: column; gap: 6px; }
+.resume-box { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; padding: 14px; border: 1px dashed var(--line); border-radius: 10px; background: var(--bg); }
+.resume-box.has { border-style: solid; border-color: var(--accent); background: var(--accent-soft); }
+.resume-icon { font: 700 12px var(--font-mono); padding: 10px 8px; border-radius: 6px; background: var(--surface); border: 1px solid var(--line); color: var(--accent); }
+.resume-info { flex: 1; min-width: 160px; display: flex; flex-direction: column; gap: 2px; }
+.resume-info strong { overflow-wrap: anywhere; }
+.file-btn { position: relative; overflow: hidden; display: inline-flex; }
+.file-btn input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+.file-btn:focus-within button { outline: 2px solid var(--accent); outline-offset: 2px; }
+.file-btn input:disabled { cursor: not-allowed; }
+.answers { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+.answer { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.answer.wide { grid-column: 1 / -1; }
+.answer-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.answer-head label { flex-direction: row; }
+.copy-btn { padding: 2px 9px; font-size: 12px; }
+.mass { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 10px; }
+footer { font-size: 12px; color: var(--muted); display: flex; flex-direction: column; gap: 4px; }
+@media (max-width: 520px) {
+  .app { grid-template-columns: 1fr; }
+  .app-side { align-items: flex-start; flex-direction: row; flex-wrap: wrap; }
+  .app-actions { justify-content: flex-start; }
+}
+@media (prefers-reduced-motion: reduce) { .bar > i { transition: none; } }
+</style>
+
+<div class="wrap">
+  <header>
+    <span class="eyebrow">Job search · ZIP 77079 · West Houston / Energy Corridor</span>
+    <h1>Out of fast food, into $16–18 an hour</h1>
+    <p class="muted" style="max-width:65ch">Set up your apply kit once. Then pick employers from the list, apply to two a day, and log each one so you know who to follow up with. Ten applications a week is the goal.</p>
+    <div class="criteria">
+      <span class="chip pay">$16–18+/hr</span>
+      <span class="chip">Little or no experience</span>
+      <span class="chip">Not fast food</span>
+      <span class="chip">2 yrs customer service</span>
+      <span class="chip">HS diploma ✓</span>
+    </div>
+  </header>
+
+  <!-- APPLY KIT -->
+  <section id="kit" aria-labelledby="kit-h">
+    <div class="sec-head">
+      <span class="eyebrow">Part 1</span>
+      <h2 id="kit-h">Your apply kit</h2>
+    </div>
+    <div class="explain">
+      <p><strong>Why there's no “send to everyone” button:</strong> UPS, Amazon, Costco, Target, H-E-B and the hospitals only take applications on their own websites. Each one has you make an account, upload a resume and answer questions there. No app can legally submit those for you.</p>
+      <p class="muted">So keep everything here, ready to go. Upload your resume once, fill in your answers once, then copy and paste into each application. Most will take about 10 minutes.</p>
+    </div>
+
+    <div class="panel">
+      <h3>Resume</h3>
+      <div class="resume-box" id="resume-box">
+        <span class="resume-icon" aria-hidden="true">PDF</span>
+        <div class="resume-info">
+          <strong id="resume-name">No resume uploaded yet</strong>
+          <span class="note" id="resume-sub">Upload it as a PDF. In Word or Google Docs, use File › Download or Save As › PDF.</span>
+        </div>
+        <div class="row">
+          <button type="button" class="small" id="resume-open" hidden>Download resume</button>
+          <span class="file-btn"><button type="button" class="primary small" id="resume-btn" tabindex="-1">Upload resume</button><input type="file" id="resume-file" accept="application/pdf,.pdf" aria-label="Upload resume PDF"></span>
+        </div>
+      </div>
+      <span class="note" id="resume-msg" role="status"></span>
+    </div>
+
+    <form class="panel" id="profile-form" autocomplete="on">
+      <div class="row" style="justify-content:space-between">
+        <h3>Answers for application forms</h3>
+        <span class="note">Tap Copy, then paste into the form.</span>
+      </div>
+      <div class="answers">
+        <div class="answer"><div class="answer-head"><label for="p-name">Full name</label><button type="button" class="small copy-btn" data-copy="p-name">Copy</button></div><input id="p-name" autocomplete="name"></div>
+        <div class="answer"><div class="answer-head"><label for="p-phone">Phone</label><button type="button" class="small copy-btn" data-copy="p-phone">Copy</button></div><input id="p-phone" type="tel" autocomplete="tel"></div>
+        <div class="answer"><div class="answer-head"><label for="p-email">Email</label><button type="button" class="small copy-btn" data-copy="p-email">Copy</button></div><input id="p-email" type="email" autocomplete="email"></div>
+        <div class="answer"><div class="answer-head"><label for="p-city">City, state, ZIP</label><button type="button" class="small copy-btn" data-copy="p-city">Copy</button></div><input id="p-city"></div>
+        <div class="answer"><div class="answer-head"><label for="p-avail">Availability</label><button type="button" class="small copy-btn" data-copy="p-avail">Copy</button></div><input id="p-avail" placeholder="e.g. Any day, 6am–11pm"></div>
+        <div class="answer"><div class="answer-head"><label for="p-start">Earliest start date</label><button type="button" class="small copy-btn" data-copy="p-start">Copy</button></div><input id="p-start" placeholder="e.g. Immediately"></div>
+        <div class="answer wide"><div class="answer-head"><label for="p-exp">Most recent job (for “work history”)</label><button type="button" class="small copy-btn" data-copy="p-exp">Copy</button></div><textarea id="p-exp" rows="3"></textarea></div>
+        <div class="answer wide"><div class="answer-head"><label for="p-why">“Why do you want this job?”</label><button type="button" class="small copy-btn" data-copy="p-why">Copy</button></div><textarea id="p-why" rows="3"></textarea></div>
+      </div>
+      <div class="row">
+        <button type="submit" class="primary" id="p-save">Save answers</button>
+        <span class="note" id="p-msg" role="status"></span>
+      </div>
+    </form>
+
+    <div class="panel">
+      <h3>Apply to lots of jobs fast</h3>
+      <p class="note">These sites let you save your resume once and then apply to many postings in a couple of clicks each. It's the closest real thing to “send to all”.</p>
+      <div class="mass">
+        <a class="link-card" href="https://profile.indeed.com/" target="_blank" rel="noopener"><strong>Indeed: upload your resume</strong><span>Then search near 77079 and turn on the “Easily apply” filter.</span></a>
+        <a class="link-card" href="https://www.linkedin.com/jobs/search/?keywords=entry%20level&location=Houston%2C%20Texas&f_AL=true" target="_blank" rel="noopener"><strong>LinkedIn Easy Apply</strong><span>Entry-level Houston jobs that take a saved resume.</span></a>
+        <a class="link-card" href="https://www.workintexas.com" target="_blank" rel="noopener"><strong>WorkInTexas</strong><span>Make one profile and employers can find you too.</span></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- TRACKER -->
+  <section id="tracker" aria-labelledby="tracker-h">
+    <div class="sec-head">
+      <span class="eyebrow">Part 2</span>
+      <h2 id="tracker-h">Application tracker</h2>
+    </div>
+
+    <div class="stats">
+      <div class="stat">
+        <span class="eyebrow">This week</span>
+        <span class="num"><span id="st-week">0</span><span class="muted" style="font-size:16px"> / 10</span></span>
+        <div class="bar" aria-hidden="true"><i id="st-week-bar"></i></div>
+      </div>
+      <div class="stat"><span class="eyebrow">Applied total</span><span class="num" id="st-total">0</span></div>
+      <div class="stat"><span class="eyebrow">Follow-ups due</span><span class="num" id="st-due" style="color:var(--warn)">0</span></div>
+      <div class="stat"><span class="eyebrow">Interviews</span><span class="num" id="st-int">0</span></div>
+      <div class="stat"><span class="eyebrow">Offers</span><span class="num" id="st-offer" style="color:var(--good)">0</span></div>
+    </div>
+
+    <div id="storage-banner" class="banner" hidden></div>
+
+    <form class="panel" id="app-form" autocomplete="off">
+      <h3 id="form-title">Log an application</h3>
+      <div class="grid-form">
+        <label for="f-company">Company<input id="f-company" required placeholder="e.g. UPS"></label>
+        <label for="f-role">Job title<input id="f-role" placeholder="e.g. Package handler"></label>
+        <label for="f-pay">Pay listed<input id="f-pay" placeholder="e.g. $19/hr"></label>
+        <label for="f-status">Status
+          <select id="f-status">
+            <option value="toapply">To apply</option>
+            <option value="applied" selected>Applied</option>
+            <option value="interview">Interview</option>
+            <option value="offer">Offer</option>
+            <option value="closed">Rejected / closed</option>
+          </select>
+        </label>
+        <label for="f-date">Date applied<input id="f-date" type="date"></label>
+        <label for="f-link">Posting link<input id="f-link" type="url" placeholder="https://"></label>
+      </div>
+      <label for="f-notes">Notes (who you talked to, interview time, shift)<textarea id="f-notes" rows="2"></textarea></label>
+      <div class="row">
+        <button type="submit" class="primary" id="f-submit">Save application</button>
+        <button type="button" id="f-cancel" hidden>Cancel edit</button>
+        <span class="note" id="f-msg" role="status"></span>
+      </div>
+    </form>
+
+    <div class="filters" role="group" aria-label="Filter applications">
+      <button type="button" data-filter="all" aria-pressed="true">All</button>
+      <button type="button" data-filter="due" aria-pressed="false">Follow up due</button>
+      <button type="button" data-filter="toapply" aria-pressed="false">To apply</button>
+      <button type="button" data-filter="applied" aria-pressed="false">Applied</button>
+      <button type="button" data-filter="interview" aria-pressed="false">Interview</button>
+      <button type="button" data-filter="offer" aria-pressed="false">Offer</button>
+      <button type="button" data-filter="closed" aria-pressed="false">Closed</button>
+    </div>
+    <div class="apps" id="apps">
+      <div class="empty">Loading your tracker…</div>
+    </div>
+  </section>
+
+  <!-- TARGETS -->
+  <section id="targets" aria-labelledby="targets-h">
+    <div class="sec-head">
+      <span class="eyebrow">Part 3</span>
+      <h2 id="targets-h">Where to apply</h2>
+      <p class="muted" style="max-width:65ch">Employers that hire without experience and are known to pay in your range in the Houston area. Pay marked <strong>listed</strong> came from recent 2026 postings or company announcements. Pay marked <strong>check</strong> varies, so confirm it on the posting before you apply. Hit “Add to list” to drop one into your tracker as “To apply”.</p>
+      <p class="note">Late October is peak holiday hiring. Seasonal jobs at UPS, Amazon, FedEx and Target often turn into permanent spots for reliable people.</p>
+    </div>
+    <div class="cat-tabs" role="group" aria-label="Filter by job type" id="cat-tabs"></div>
+    <div class="targets" id="target-list"></div>
+  </section>
+
+  <!-- SEARCH LINKS -->
+  <section id="search" aria-labelledby="search-h">
+    <div class="sec-head">
+      <span class="eyebrow">Part 4</span>
+      <h2 id="search-h">Search here every day</h2>
+    </div>
+    <div class="links">
+      <a class="link-card" href="https://www.indeed.com/jobs?q=no+experience&l=77079&radius=15&sort=date" target="_blank" rel="noopener"><strong>Indeed: no experience, near 77079</strong><span>Newest first, 15 mile radius. Apply to fresh posts first.</span></a>
+      <a class="link-card" href="https://www.indeed.com/jobs?q=seasonal&l=77079&radius=15&sort=date" target="_blank" rel="noopener"><strong>Indeed: seasonal near 77079</strong><span>Holiday jobs that hire fast.</span></a>
+      <a class="link-card" href="https://www.linkedin.com/jobs/search/?keywords=entry%20level&location=Houston%2C%20Texas&f_E=2" target="_blank" rel="noopener"><strong>LinkedIn: entry level, Houston</strong><span>Good for office, bank and hospital roles.</span></a>
+      <a class="link-card" href="https://www.workintexas.com" target="_blank" rel="noopener"><strong>WorkInTexas.com</strong><span>The state's free job board.</span></a>
+      <a class="link-card" href="https://wrksolutions.com/news/build-your-future-with-a-youth-career-advisor" target="_blank" rel="noopener"><strong>Workforce Solutions youth advisor</strong><span>Free help with resumes, interviews and paid training for young adults.</span></a>
+      <a class="link-card" href="https://wrksolutions.com/about-us/career-offices" target="_blank" rel="noopener"><strong>Find a Workforce Solutions office</strong><span>Walk-ins are welcome. Pick the closest one to you.</span></a>
+    </div>
+  </section>
+
+  <!-- PLAYBOOK -->
+  <section id="playbook" aria-labelledby="play-h">
+    <div class="sec-head">
+      <span class="eyebrow">How to run it</span>
+      <h2 id="play-h">Your weekly routine</h2>
+    </div>
+    <ol class="steps">
+      <li><strong>Every weekday, 30–45 minutes:</strong> open the Indeed links above, apply to 2 jobs, and log each one here right away.</li>
+      <li><strong>Apply in person too.</strong> For stores and grocery, walk in on a weekday afternoon, around 2–4pm when it's quieter. Dress neat, bring a printed resume, and ask for the hiring manager by name if you can.</li>
+      <li><strong>Follow up after 5 days.</strong> Anything marked Applied for 5+ days turns orange here. Call or stop by: “Hi, I applied for the ___ position last week and wanted to check on it.” Then hit “Followed up”.</li>
+      <li><strong>Sunday review, 10 minutes.</strong> Look at what got callbacks and do more of that kind of job next week.</li>
+      <li><strong>Keep your phone ready.</strong> Answer unknown numbers politely and set up a simple voicemail with your name. Recruiters often call only once.</li>
+    </ol>
+
+    <div class="two">
+      <div class="panel">
+        <h3>Your fast food job, rewritten for a resume</h3>
+        <p class="note">Fill in the blanks and keep only what's true for you.</p>
+        <pre class="copy" id="resume-text">Crew Member, [Restaurant name], Houston, TX
+[Month Year] – Present
+
+• Served 100+ customers per shift in a fast-paced environment
+• Handled cash and card payments and balanced my drawer at close
+• Trained new team members on stations and food safety rules
+• Kept a reliable attendance record over 2 years
+• Stayed calm and solved problems with upset customers</pre>
+        <div class="row"><button type="button" class="small" id="copy-resume">Copy text</button><span class="note" id="copy-msg" role="status"></span></div>
+      </div>
+      <div class="panel">
+        <h3>Interview answers to practice</h3>
+        <dl class="qa">
+          <dt>“Why do you want to leave fast food?”</dt>
+          <dd>“I've learned a lot about customer service and working fast. Now I want to grow somewhere I can build a career.” Stay positive and don't trash your old job.</dd>
+          <dt>“You don't have experience in this.”</dt>
+          <dd>“I've worked two years in a busy job, I show up on time, and I learn quickly. I trained new people at my last job.”</dd>
+          <dt>“What's your availability?”</dt>
+          <dd>Know your exact days and hours before the interview. Open availability gets hired fastest.</dd>
+          <dt>Ask them one question</dt>
+          <dd>“What does a great first month look like in this role?” It shows you care about doing well.</dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h3>Skip any job that…</h3>
+      <ul class="flags">
+        <li>Asks you to pay for training, equipment or a background check up front.</li>
+        <li>Wants you to cash a check, buy gift cards, or forward packages from home.</li>
+        <li>Asks for your Social Security number or bank info before an interview or offer.</li>
+        <li>Only talks over text or chat apps and never gives a real company address.</li>
+      </ul>
+    </div>
+  </section>
+
+  <footer>
+    <span>Pay figures checked October 2026 from public postings and company announcements. Wages change, so the posting is always the final word.</span>
+  </footer>
+</div>
+
+<script>
+(function () {
+  "use strict";
+  var TARGETS = [
+    { cat: "Warehouse", name: "UPS", roles: "Package handler, seasonal helper", pay: "$19–21/hr", src: "listed", why: "Houston hubs hire constantly, no experience needed. Part-time shifts can come with benefits and tuition help.", url: "https://www.jobs-ups.com" },
+    { cat: "Warehouse", name: "Amazon", roles: "Warehouse / sortation associate", pay: "$19–22/hr", src: "listed", why: "Houston and Katy sites. Apply online and often start within a week or two. Night shifts pay extra.", url: "https://hiring.amazon.com" },
+    { cat: "Warehouse", name: "H-E-B warehouse", roles: "Warehouse / distribution", pay: "$17.50/hr", src: "listed", why: "Reported starting pay for Houston warehouse roles. H-E-B is known for promoting from within.", url: "https://careers.heb.com" },
+    { cat: "Warehouse", name: "FedEx", roles: "Package handler", pay: "check", src: "check", why: "Same kind of work as UPS, with lots of Houston locations. Compare pay on the posting.", url: "https://careers.fedex.com" },
+    { cat: "Retail", name: "Costco", roles: "Cashier assistant, stocker, front end", pay: "$19.50+/hr", src: "listed", why: "Company-wide starting wage, with raises built in. Competitive, so apply early and follow up in person.", url: "https://www.costco.com/jobs.html" },
+    { cat: "Retail", name: "Target", roles: "Team member, seasonal, fulfillment", pay: "$17–19/hr", src: "listed", why: "Reported Houston starting range. Seasonal hiring is happening right now.", url: "https://corporate.target.com/careers" },
+    { cat: "Retail", name: "H-E-B stores", roles: "Stocker, curbside, store partner", pay: "check", src: "check", why: "Pay depends on role. Stock, curbside and specialty departments usually pay more than bagging.", url: "https://careers.heb.com" },
+    { cat: "Retail", name: "Home Depot / Lowe's", roles: "Freight team, lot associate, cashier", pay: "check", src: "check", why: "Overnight freight and lot jobs value reliability over experience.", url: "https://careers.homedepot.com" },
+    { cat: "Healthcare", name: "Memorial Hermann Memorial City", roles: "Patient transporter, environmental services, food service", pay: "check", src: "check", why: "A big hospital close to 77079. Entry roles get your foot in the door and can lead to paid training.", url: "https://careers.memorialhermann.org" },
+    { cat: "Healthcare", name: "Houston Methodist West", roles: "Transporter, patient care tech trainee, dietary", pay: "check", src: "check", why: "At I-10 and Barker Cypress, a short drive from 77079. Look for jobs that say “no experience” or “will train”.", url: "https://jobs.houstonmethodist.org" },
+    { cat: "Healthcare", name: "CVS / Walgreens", roles: "Pharmacy technician trainee", pay: "check", src: "check", why: "They train you and help you get certified. This can lead to better-paying pharmacy tech jobs.", url: "https://jobs.cvshealth.com" },
+    { cat: "Office & service", name: "Banks (Chase, Bank of America, Wells Fargo)", roles: "Bank teller", pay: "check", src: "check", why: "Your cash-handling experience counts. Big banks often post starting pay at or above your range. Confirm it on the posting.", url: "https://www.indeed.com/jobs?q=bank+teller&l=77079&radius=15" },
+    { cat: "Office & service", name: "Apartment communities", roles: "Leasing consultant, porter, maintenance helper", pay: "check", src: "check", why: "The Energy Corridor has tons of apartment complexes. Leasing jobs reward customer service skills.", url: "https://www.indeed.com/jobs?q=leasing+consultant&l=77079&radius=15" },
+    { cat: "Office & service", name: "Buc-ee's (Katy)", roles: "Beaver Crew, cashier, stocker", pay: "check", src: "check", why: "Known for paying above typical retail. It's busy and fast, which you're already used to.", url: "https://buc-ees.com/careers" },
+    { cat: "Trades", name: "Electrical / HVAC / plumbing helper", roles: "Apprentice, helper, trainee", pay: "check", src: "check", why: "Many shops will train a reliable 18-year-old, and pay climbs fast as you learn. A driver's license helps a lot.", url: "https://www.indeed.com/jobs?q=helper+no+experience&l=77079&radius=20" }
+  ];
+
+  var STATUS_LABEL = { toapply: "To apply", applied: "Applied", interview: "Interview", offer: "Offer", closed: "Closed" };
+  var FOLLOW_DAYS = 5;
+  var apps = [];
+  var filter = "all";
+  var editingId = null;
+  var store = null;
+  var $ = function (id) { return document.getElementById(id); };
+
+  function todayStr() {
+    var d = new Date();
+    return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+  }
+  function parseDay(s) { if (!s) return null; var p = s.split("-"); return new Date(+p[0], +p[1] - 1, +p[2]); }
+  function daysSince(s) { var d = parseDay(s); if (!d) return null; var t = parseDay(todayStr()); return Math.round((t - d) / 86400000); }
+  function weekStart() { var t = parseDay(todayStr()); var dow = (t.getDay() + 6) % 7; t.setDate(t.getDate() - dow); return t; }
+  function isDue(a) {
+    if (a.status !== "applied") return false;
+    var since = daysSince(a.followedUp || a.applied);
+    return since !== null && since >= FOLLOW_DAYS;
+  }
+  function fmtDate(s) { var d = parseDay(s); return d ? d.toLocaleDateString(undefined, { month: "short", day: "numeric" }) : ""; }
+  function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
+
+  /* ---------- storage: shared db when available, this browser otherwise ---------- */
+  var LS_KEY = "jobhunt-apps-v1";
+  function localStore() {
+    function read() { try { return JSON.parse(localStorage.getItem(LS_KEY) || "[]"); } catch (e) { return []; } }
+    function write(list) { try { localStorage.setItem(LS_KEY, JSON.stringify(list)); } catch (e) {} }
+    var cb = null;
+    return {
+      subscribe: function (fn) { cb = fn; fn(read()); },
+      add: function (obj) { var l = read(); obj.id = "a" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6); l.push(obj); write(l); cb && cb(l); return Promise.resolve(); },
+      update: function (id, patch) { var l = read().map(function (a) { return a.id === id ? Object.assign({}, a, patch) : a; }); write(l); cb && cb(l); return Promise.resolve(); },
+      remove: function (id) { var l = read().filter(function (a) { return a.id !== id; }); write(l); cb && cb(l); return Promise.resolve(); }
+    };
+  }
+  function dbStore(db) {
+    var col = db.collection("applications");
+    return {
+      subscribe: function (fn, onErr) {
+        col.onSnapshot(function (snap) {
+          fn(snap.docs.map(function (d) { return Object.assign({ id: d.id }, d.data()); }));
+        }, onErr);
+      },
+      add: function (obj) { return col.add(obj); },
+      update: function (id, patch) { return col.doc(id).update(patch); },
+      remove: function (id) { return col.doc(id).delete(); }
+    };
+  }
+  function useLocal(reason) {
+    store = localStore();
+    var b = $("storage-banner");
+    b.textContent = reason;
+    b.hidden = false;
+    store.subscribe(function (list) { apps = list; render(); });
+  }
+  function connect(tries) {
+    tries = tries || 0;
+    if ((!window.claude || !window.claude.use) && tries < 20) { setTimeout(function () { connect(tries + 1); }, 100); return; }
+    if (!window.claude || !window.claude.use) { useLocal("Saving in this browser only. Open this page from Claude to save across your devices."); profileLocal(); return; }
+    window.claude.use("db").then(function (db) {
+      if (!db) { useLocal("Saving in this browser only right now. Sign in to Claude to keep your list on every device."); profileLocal(); return; }
+      connectProfile(db);
+      store = dbStore(db);
+      store.subscribe(function (list) { apps = list; render(); }, function () {
+        useLocal("Couldn't reach your saved list, so changes are saving in this browser for now.");
+      });
+    }, function () { useLocal("Saving in this browser only."); });
+  }
+
+  /* ---------- apply kit: answers + resume ---------- */
+  var P_FIELDS = ["name", "phone", "email", "city", "avail", "start", "exp", "why"];
+  var P_DEFAULTS = {
+    city: "Houston, TX 77079",
+    start: "Immediately",
+    exp: "Crew Member, [Restaurant name], Houston, TX, [Month Year] to present. Took orders and handled cash and card payments for 100+ customers per shift, trained new team members, and kept a reliable attendance record for 2 years.",
+    why: "I have 2 years of customer service experience in a fast-paced job. I'm reliable, I learn quickly, and I'm looking for a place where I can grow and take on more responsibility."
+  };
+  var profile = {};
+  var profileRef = null;
+  var assetsNs = null;
+  var profileLoaded = false;
+  var P_LS = "jobhunt-profile-v1";
+
+  function fillProfile(p, force) {
+    P_FIELDS.forEach(function (k) {
+      var inp = $("p-" + k);
+      if (force || document.activeElement !== inp) inp.value = (p[k] != null && p[k] !== "") ? p[k] : (P_DEFAULTS[k] || "");
+    });
+  }
+  function readProfileForm() {
+    var o = {};
+    P_FIELDS.forEach(function (k) { o[k] = $("p-" + k).value.trim().slice(0, 1500); });
+    return o;
+  }
+  function renderResume() {
+    var has = !!profile.resumeId;
+    $("resume-box").classList.toggle("has", has);
+    $("resume-name").textContent = has ? (profile.resumeName || "resume.pdf") : "No resume uploaded yet";
+    $("resume-sub").textContent = has
+      ? "Uploaded " + fmtDate(profile.resumeDate) + ". Download it, then attach it on each job site."
+      : "Upload it as a PDF. In Word or Google Docs, use File › Download or Save As › PDF.";
+    $("resume-open").hidden = !has;
+    $("resume-btn").textContent = has ? "Replace" : "Upload resume";
+  }
+  function setResumeUploadAvailable(ok, why) {
+    $("resume-file").disabled = !ok;
+    $("resume-btn").disabled = !ok;
+    if (!ok) $("resume-msg").textContent = why;
+  }
+  function profileLocal() {
+    try { profile = JSON.parse(localStorage.getItem(P_LS) || "{}"); } catch (e) { profile = {}; }
+    profileLoaded = true;
+    fillProfile(profile, true);
+    renderResume();
+    setResumeUploadAvailable(false, "Resume upload needs this page opened from your Claude account.");
+  }
+  function connectProfile(db) {
+    Promise.all([window.claude.use("user"), window.claude.use("assets")]).then(function (r) {
+      var user = r[0];
+      assetsNs = r[1];
+      return (user ? user.id() : Promise.resolve(null)).then(function (uid) {
+        if (!uid) { profileLocal(); return; }
+        profileRef = db.doc("data/users/" + uid + "/profile");
+        profileRef.onSnapshot(function (snap) {
+          profile = snap.exists ? Object.assign({}, snap.data()) : {};
+          fillProfile(profile, !profileLoaded);
+          profileLoaded = true;
+          renderResume();
+        }, function () { $("p-msg").textContent = "Couldn't load your saved answers. Reload the page to try again."; });
+        if (!assetsNs) setResumeUploadAvailable(false, "Resume upload is only available to you, the page owner.");
+      });
+    }, function () { profileLocal(); });
+  }
+  function saveProfile(extra) {
+    var next = Object.assign({}, profile, readProfileForm(), extra || {});
+    if (!profileRef) {
+      try { localStorage.setItem(P_LS, JSON.stringify(next)); } catch (e) {}
+      profile = next;
+      return Promise.resolve();
+    }
+    return profileRef.set(next).then(function () { profile = next; });
+  }
+  $("profile-form").addEventListener("submit", function (e) {
+    e.preventDefault();
+    if (!profileLoaded) { $("p-msg").textContent = "Still loading. Try again in a second."; return; }
+    $("p-save").disabled = true;
+    saveProfile().then(function () { $("p-msg").textContent = "Saved."; }, function () { $("p-msg").textContent = "That didn't save. Check your connection and try again."; })
+      .then(function () { $("p-save").disabled = false; setTimeout(function () { $("p-msg").textContent = ""; }, 3000); });
+  });
+  $("resume-file").addEventListener("change", function () {
+    var f = this.files && this.files[0];
+    this.value = "";
+    if (!f) return;
+    var msg = $("resume-msg");
+    if (!/\.pdf$/i.test(f.name) && f.type !== "application/pdf") { msg.textContent = "Please upload a PDF. Save your resume as PDF first, then try again."; return; }
+    if (f.size > 20 * 1024 * 1024) { msg.textContent = "That file is over 20 MB. Save a smaller PDF and try again."; return; }
+    if (!assetsNs) { msg.textContent = "Resume upload isn't available here."; return; }
+    msg.textContent = "Uploading…";
+    var oldId = profile.resumeId;
+    assetsNs.upload(f, { type: "application/pdf" }).then(function (res) {
+      return saveProfile({ resumeId: res.id, resumeName: f.name.slice(0, 120), resumeDate: todayStr() }).then(function () {
+        msg.textContent = "Resume saved.";
+        renderResume();
+        if (oldId && oldId !== res.id) assetsNs.delete(oldId).catch(function () {});
+      });
+    }).catch(function (e) {
+      var c = e && e.code;
+      msg.textContent = c === "too_large" ? "That file is too big. Save a smaller PDF."
+        : c === "unsupported_type" ? "That file isn't a PDF the page can read. Re-save it as PDF."
+        : c === "rate_limited" ? "Too many tries. Wait a minute and try again."
+        : "Upload didn't work. Check your connection and try again.";
+    });
+  });
+  $("resume-open").addEventListener("click", function () {
+    var btn = this, msg = $("resume-msg");
+    if (!profile.resumeId) return;
+    btn.disabled = true;
+    msg.textContent = "Getting your resume…";
+    var name = (profile.resumeName || "resume.pdf").replace(/[\\/:*?"<>|]/g, "");
+    if (!/\.pdf$/i.test(name)) name += ".pdf";
+    Promise.all([window.claude.use("downloads"), fetch("/_blob/" + profile.resumeId)]).then(function (r) {
+      var dl = r[0], res = r[1];
+      if (!res.ok) throw { code: "missing" };
+      if (!dl) throw { code: "unavailable" };
+      return res.blob().then(function (b) { return dl.save({ filename: name, data: b }); });
+    }).then(function () {
+      msg.textContent = "Saved to your downloads.";
+    }, function (e) {
+      var c = e && e.code;
+      msg.textContent = c === "declined" ? ""
+        : c === "missing" ? "The saved file couldn't be found. Upload your resume again."
+        : c === "rate_limited" ? "A save box is already open. Finish that one first."
+        : c === "unavailable" || c === "not_granted" || c === "capability_disabled" ? "Downloads aren't available in this view. Open the page on claude.ai to download."
+        : "The download didn't work. Check your connection and try again.";
+    }).then(function () { btn.disabled = false; });
+  });
+  function copyText(text, btn) {
+    var done = function () { var t = btn.textContent; btn.textContent = "Copied ✓"; setTimeout(function () { btn.textContent = t === "Copied ✓" ? "Copy" : t; }, 1500); };
+    try { navigator.clipboard.writeText(text).then(done, function () { btn.textContent = "Select & Ctrl+C"; }); } catch (e) { btn.textContent = "Select & Ctrl+C"; }
+  }
+  document.querySelectorAll("[data-copy]").forEach(function (b) {
+    b.addEventListener("click", function () {
+      var inp = $(b.dataset.copy);
+      if (!inp.value.trim()) { inp.focus(); return; }
+      inp.select();
+      copyText(inp.value, b);
+    });
+  });
+
+  function showMsg(t) { $("f-msg").textContent = t; if (t) setTimeout(function () { if ($("f-msg").textContent === t) $("f-msg").textContent = ""; }, 3000); }
+  function failMsg(e) { showMsg(e && e.code === "quota_exceeded" ? "Your list is full. Delete some old entries first." : "That didn't save. Check your connection and try again."); }
+
+  /* ---------- tracker render ---------- */
+  function render() {
+    var ws = weekStart();
+    var week = apps.filter(function (a) { var d = parseDay(a.applied); return a.status !== "toapply" && d && d >= ws; }).length;
+    $("st-week").textContent = week;
+    $("st-week-bar").style.width = Math.min(100, week * 10) + "%";
+    $("st-total").textContent = apps.filter(function (a) { return a.status !== "toapply"; }).length;
+    $("st-due").textContent = apps.filter(isDue).length;
+    $("st-int").textContent = apps.filter(function (a) { return a.status === "interview"; }).length;
+    $("st-offer").textContent = apps.filter(function (a) { return a.status === "offer"; }).length;
+
+    var list = apps.slice().sort(function (a, b) {
+      var da = isDue(a) ? 0 : 1, dbb = isDue(b) ? 0 : 1;
+      if (da !== dbb) return da - dbb;
+      return (b.applied || b.created || "").localeCompare(a.applied || a.created || "");
+    }).filter(function (a) { return filter === "all" ? true : filter === "due" ? isDue(a) : a.status === filter; });
+
+    var box = $("apps");
+    box.textContent = "";
+    if (!apps.length) {
+      box.appendChild(el("div", "empty", "No applications yet. Log your first one above, or pick an employer below and hit “Add to list”."));
+      return;
+    }
+    if (!list.length) { box.appendChild(el("div", "empty", "Nothing matches this filter.")); return; }
+
+    list.forEach(function (a) {
+      var due = isDue(a);
+      var card = el("div", "app" + (due ? " due" : ""));
+      var main = el("div", "app-main");
+      main.appendChild(el("div", "app-title", a.company + (a.role ? " · " + a.role : "")));
+      var meta = el("div", "app-meta");
+      if (a.pay) meta.appendChild(el("span", "mono", a.pay));
+      if (a.applied && a.status !== "toapply") meta.appendChild(el("span", null, "Applied " + fmtDate(a.applied)));
+      if (a.followedUp) meta.appendChild(el("span", null, "Followed up " + fmtDate(a.followedUp)));
+      if (a.link) { var l = el("a", null, "Posting"); l.href = a.link; l.target = "_blank"; l.rel = "noopener"; meta.appendChild(l); }
+      main.appendChild(meta);
+      if (a.notes) main.appendChild(el("div", "app-notes", a.notes));
+      card.appendChild(main);
+
+      var side = el("div", "app-side");
+      side.appendChild(el("span", "status s-" + a.status, STATUS_LABEL[a.status] || a.status));
+      if (due) side.appendChild(el("span", "due-tag", "Follow up now"));
+      card.appendChild(side);
+
+      var acts = el("div", "app-actions");
+      var sel = el("select", "status-select");
+      sel.setAttribute("aria-label", "Change status for " + a.company);
+      Object.keys(STATUS_LABEL).forEach(function (k) { var o = el("option", null, STATUS_LABEL[k]); o.value = k; if (k === a.status) o.selected = true; sel.appendChild(o); });
+      sel.addEventListener("change", function () {
+        var patch = { status: sel.value };
+        if (sel.value !== "toapply" && !a.applied) patch.applied = todayStr();
+        store.update(a.id, patch).catch(failMsg);
+      });
+      acts.appendChild(sel);
+      if (due) {
+        var fu = el("button", "small", "Followed up");
+        fu.type = "button";
+        fu.addEventListener("click", function () { store.update(a.id, { followedUp: todayStr() }).catch(failMsg); });
+        acts.appendChild(fu);
+      }
+      var ed = el("button", "small", "Edit");
+      ed.type = "button";
+      ed.addEventListener("click", function () { startEdit(a); });
+      acts.appendChild(ed);
+      var del = el("button", "small danger", "Delete");
+      del.type = "button";
+      var armed = false;
+      del.addEventListener("click", function () {
+        if (!armed) { armed = true; del.textContent = "Tap again to delete"; setTimeout(function () { armed = false; del.textContent = "Delete"; }, 3000); return; }
+        store.remove(a.id).catch(failMsg);
+      });
+      acts.appendChild(del);
+      card.appendChild(acts);
+      box.appendChild(card);
+    });
+  }
+
+  /* ---------- form ---------- */
+  function resetForm() {
+    editingId = null;
+    $("app-form").reset();
+    $("f-date").value = todayStr();
+    $("f-status").value = "applied";
+    $("form-title").textContent = "Log an application";
+    $("f-submit").textContent = "Save application";
+    $("f-cancel").hidden = true;
+  }
+  function startEdit(a) {
+    editingId = a.id;
+    $("f-company").value = a.company || "";
+    $("f-role").value = a.role || "";
+    $("f-pay").value = a.pay || "";
+    $("f-status").value = a.status || "applied";
+    $("f-date").value = a.applied || "";
+    $("f-link").value = a.link || "";
+    $("f-notes").value = a.notes || "";
+    $("form-title").textContent = "Edit " + a.company;
+    $("f-submit").textContent = "Save changes";
+    $("f-cancel").hidden = false;
+    $("app-form").scrollIntoView({ behavior: "smooth", block: "start" });
+    $("f-company").focus({ preventScroll: true });
+  }
+  $("app-form").addEventListener("submit", function (e) {
+    e.preventDefault();
+    if (!store) { showMsg("Still loading. Try again in a second."); return; }
+    var obj = {
+      company: $("f-company").value.trim().slice(0, 120),
+      role: $("f-role").value.trim().slice(0, 120),
+      pay: $("f-pay").value.trim().slice(0, 40),
+      status: $("f-status").value,
+      applied: $("f-date").value || (($("f-status").value !== "toapply") ? todayStr() : ""),
+      link: /^https?:\/\//i.test($("f-link").value.trim()) ? $("f-link").value.trim().slice(0, 500) : "",
+      notes: $("f-notes").value.trim().slice(0, 1000)
+    };
+    if (!obj.company) return;
+    var p = editingId ? store.update(editingId, obj) : store.add(Object.assign({ created: todayStr() }, obj));
+    var wasEdit = !!editingId;
+    p.then(function () { resetForm(); showMsg(wasEdit ? "Saved." : "Logged. Nice work."); }, failMsg);
+  });
+  $("f-cancel").addEventListener("click", resetForm);
+
+  document.querySelectorAll(".filters button").forEach(function (b) {
+    b.addEventListener("click", function () {
+      filter = b.dataset.filter;
+      document.querySelectorAll(".filters button").forEach(function (x) { x.setAttribute("aria-pressed", String(x === b)); });
+      render();
+    });
+  });
+
+  /* ---------- targets ---------- */
+  var cat = "All";
+  var cats = ["All"].concat(TARGETS.map(function (t) { return t.cat; }).filter(function (c, i, arr) { return arr.indexOf(c) === i; }));
+  function renderTabs() {
+    var tabs = $("cat-tabs"); tabs.textContent = "";
+    cats.forEach(function (c) {
+      var b = el("button", null, c); b.type = "button"; b.setAttribute("aria-pressed", String(c === cat));
+      b.addEventListener("click", function () { cat = c; renderTabs(); renderTargets(); });
+      tabs.appendChild(b);
+    });
+  }
+  function renderTargets() {
+    var box = $("target-list"); box.textContent = "";
+    TARGETS.filter(function (t) { return cat === "All" || t.cat === cat; }).forEach(function (t) {
+      var card = el("article", "target");
+      var top = el("div", "target-top");
+      top.appendChild(el("h3", null, t.name));
+      var pay = el("span", "pay-tag", t.src === "listed" ? t.pay : "Check pay");
+      pay.style.color = t.src === "listed" ? "var(--good)" : "var(--muted)";
+      top.appendChild(pay);
+      card.appendChild(top);
+      card.appendChild(el("span", "eyebrow", t.cat + (t.src === "listed" ? " · listed pay" : " · confirm pay on posting")));
+      card.appendChild(el("div", "roles", t.roles));
+      card.appendChild(el("p", "why", t.why));
+      var row = el("div", "row");
+      var a = el("a", null, "Open careers page"); a.href = t.url; a.target = "_blank"; a.rel = "noopener";
+      row.appendChild(a);
+      var add = el("button", "small", "Add to list"); add.type = "button";
+      add.addEventListener("click", function () {
+        if (!store) return;
+        store.add({ company: t.name, role: t.roles.split(",")[0], pay: t.src === "listed" ? t.pay : "", status: "toapply", applied: "", link: t.url, notes: "", created: todayStr() })
+          .then(function () { add.textContent = "Added ✓"; add.disabled = true; }, function () { add.textContent = "Didn't save, try again"; });
+      });
+      row.appendChild(add);
+      var did = el("button", "small primary", "I applied"); did.type = "button";
+      did.addEventListener("click", function () {
+        if (!store) return;
+        var existing = apps.filter(function (x) { return x.company === t.name && x.status === "toapply"; })[0];
+        var p = existing
+          ? store.update(existing.id, { status: "applied", applied: todayStr() })
+          : store.add({ company: t.name, role: t.roles.split(",")[0], pay: t.src === "listed" ? t.pay : "", status: "applied", applied: todayStr(), link: t.url, notes: "", created: todayStr() });
+        p.then(function () { did.textContent = "Logged ✓"; did.disabled = true; add.disabled = true; }, function () { did.textContent = "Didn't save, try again"; });
+      });
+      row.appendChild(did);
+      card.appendChild(row);
+      box.appendChild(card);
+    });
+  }
+
+  $("copy-resume").addEventListener("click", function () {
+    var text = $("resume-text").textContent;
+    var done = function () { $("copy-msg").textContent = "Copied."; };
+    var fallback = function () {
+      var r = document.createRange(); r.selectNodeContents($("resume-text"));
+      var s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
+      $("copy-msg").textContent = "Selected. Press Ctrl+C to copy.";
+    };
+    try { navigator.clipboard.writeText(text).then(done, fallback); } catch (e) { fallback(); }
+  });
+
+  resetForm();
+  fillProfile({}, true);
+  renderTabs();
+  renderTargets();
+  connect();
+})();
+</script>
